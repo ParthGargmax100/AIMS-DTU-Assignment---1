@@ -1,0 +1,34 @@
+#file path for which it is made 
+#C:\Users\HP\Desktop\python programming\AIMS_assign\Train.csv
+
+import pandas as pd
+
+input_path = input("enter path of csv file you want me to read and impute: ").strip() 
+#strip() -- removes extra spaces, tabs, or newlines from both ends of a string.
+data = pd.read_csv(input_path)
+
+backup = data.copy()
+
+print(f"5 rows of dataset: ")
+print(data.head())
+
+
+null_col = data.columns[data.isnull().any()].tolist()  
+#columns that contains mssing values 
+print(f"columns with missing values : {null_col} \n")
+
+
+for col in null_col:
+    col_dtype = data[col].dtype
+    if col_dtype == 'object':
+        print(f"Skipping column {col} (dtype=object).")
+    else:
+        mean_val = data[col].mean()
+        print(mean_val)
+        num_missing = data[col].isnull().sum()
+        print(f"missing total in {col} = {num_missing}")
+        data[col].fillna(mean_val, inplace=True)
+
+print(data)
+
+data.to_csv(input("enter pile path you want to save:"))
