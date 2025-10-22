@@ -1,0 +1,64 @@
+#file path for which it is made 
+#C:\Users\HP\Desktop\python programming\AIMS_assign\Train.csv
+
+import pandas as pd
+import numpy as np
+
+pd.set_option('display.max_columns', None)
+
+input_path = input("enter path of csv file you want me to read and encode: ").strip() 
+#strip() -- removes extra spaces, tabs, or newlines from both ends of a string.
+data = pd.read_csv(input_path)
+
+
+print(f"5 rows of dataset: ")
+print(data)
+
+
+categorical_data = data.select_dtypes(include = ['object']).columns.tolist()
+print(f"categorical data is : {categorical_data}")
+
+one_hot = ['Item_Type', 'Outlet_Type']
+ordinal = ['Item_Fat_Content', 'Outlet_Size', 'Outlet_Location_Type', ]
+
+
+#if i want to see the unique objectives of any column
+for col in ordinal:
+    print(f"col {col} : {data[col].unique()} ")
+
+fat_content_normalise = {'LF': 'Low Fat', 'low fat': 'Low Fat', 'reg': 'Regular' }
+Item_Fat_Content = data['Item_Fat_Content'].replace(fat_content_normalise)
+
+
+data['Outlet_Size'] = data['Outlet_Size'].fillna('Unknown')
+
+
+map_fat = {'Low Fat':0, 'Regular':1}
+map_outlet_size = {'Small':1, 'Medium':2, 'High':3, 'Unknown':0}
+map_loc_type = {'Tier 1':2, 'Tier 2':1, 'Tier 3':0}
+
+
+data['Item_Fat_Content'] = data['Item_Fat_Content'].replace(map_fat)
+data['Outlet_Size'] = data['Outlet_Size'].replace(map_outlet_size)
+data['Outlet_Location_Type'] = data['Outlet_Location_Type'].replace(map_loc_type)
+
+
+
+Item_Type = data['Item_Type'].unique()
+for i in Item_Type:
+    column = f'{i}'
+    data[column] = (data[Item_Type] == i).astype(int)
+data = data.drop('Item_Type', axis=1)
+
+
+
+Outlet_Type = data['Outlet_Type'].unique()
+for i in Outlet_Type:
+    column  = f'{i}'
+    data[column] = (data[Outlet_Type] == i).astype(int)
+data = data.drop('Outlet_Type', axis=1)
+
+
+data.to_csv(input("Enter path to save file: ",).strip())
+
+
